@@ -1,0 +1,52 @@
+services:
+  lean_server:
+    build:
+      context: ./lean_server
+    container_name: benchenv-lean-server
+    environment:
+      LEAN_SERVER_HOST: 0.0.0.0
+      LEAN_SERVER_PORT: 8578
+      LEAN_SERVER_SLOTS: 4
+      LEAN_SERVER_WAIT_TIMEOUT: 40
+      LEAN_SERVER_DIAGNOSTIC_TIMEOUT: 30
+      LEAN_SERVER_WARMUP_TIMEOUT: 300
+    ports:
+      - "8578:8578"
+    volumes:
+      - lean_server_elan:/root/.elan
+      - lean_server_lake:/app/workspace/.lake
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://127.0.0.1:8578/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 20
+      start_period: 180s
+    restart: unless-stopped
+
+  lean_explore:
+    build:
+      context: ./lean_explore
+    container_name: benchenv-lean-explore
+    environment:
+      HOST: 0.0.0.0
+      PORT: 8580
+      LOG_LEVEL: info
+      PYTHONUNBUFFERED: "1"
+    ports:
+      - "8580:8580"
+    volumes:
+      - lean_explore_venv:/app/.venv
+      - lean_explore_data:/root/.lean_explore
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://127.0.0.1:8580/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 20
+      start_period: 300s
+    restart: unless-stopped
+
+volumes:
+  lean_server_elan:
+  lean_server_lake:
+  lean_explore_venv:
+  lean_explore_data:

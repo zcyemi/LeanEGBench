@@ -1,0 +1,24 @@
+import Mathlib
+open scoped Real EuclideanGeometry Similar Congruent InnerProductSpace Cardinal
+open Affine EuclideanGeometry Module AffineSubspace InnerProductSpace Sphere Real Set Finset
+open Affine.Simplex RealInnerProductSpace AffineEquiv AffineMap Metric
+variable {V Pt : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace Pt]
+variable [NormedAddTorsor V Pt] [Fact (finrank ℝ V = 2)] [Oriented ℝ V (Fin 2)]
+
+theorem result
+    {A B C D E F H X Y Z : Pt} {ωDEF : Sphere Pt}
+    (affineIndependent_ABC : AffineIndependent ℝ ![A, B, C])
+    (acute : (⟨_, affineIndependent_ABC⟩ : Triangle ℝ Pt).AcuteAngled)
+    (D_eq_altitudeFoot : D = (⟨![A, B, C], affineIndependent_ABC⟩ : Triangle ℝ Pt).altitudeFoot 0)
+    (E_eq_altitudeFoot : E = (⟨![A, B, C], affineIndependent_ABC⟩ : Triangle ℝ Pt).altitudeFoot 1)
+    (F_eq_altitudeFoot : F = (⟨![A, B, C], affineIndependent_ABC⟩ : Triangle ℝ Pt).altitudeFoot 2)
+    (H_mem_AD : H ∈ line[ℝ, A, D])
+    (H_mem_BE : H ∈ line[ℝ, B, E])
+    (H_mem_CF : H ∈ line[ℝ, C, F])
+    (affineIndependent_DEF : AffineIndependent ℝ ![D, E, F])
+    (circumsphere_DEF_eq : (⟨_, affineIndependent_DEF⟩ : Triangle ℝ Pt).circumsphere = ωDEF)
+    (X_eq : X = ωDEF.secondInter D (A -ᵥ D))
+    (Y_eq : Y = ωDEF.secondInter E (B -ᵥ E))
+    (Z_eq : Z = ωDEF.secondInter F (C -ᵥ F)) :
+    dist A H / dist D X + dist B H / dist E Y + dist C H / dist F Z ≥ 3 := by
+  admit
