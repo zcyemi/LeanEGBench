@@ -1,0 +1,38 @@
+# Python
+__pycache__/
+*.py[cod]
+*.so
+*.egg-info/
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Virtual environments
+.env
+.venv
+venv/
+env/
+
+# IDEs
+.vscode/
+.idea/
+
+# Ruff
+.ruff_cache/
+
+# Lean
+.lake/
+
+# OS
+.DS_Store
+
+# Project-specific
+data/
+logs/
+tmp/
+temp/
+
+# Generated files
+AGENTS.md
+CLAUDE.md
+dist/

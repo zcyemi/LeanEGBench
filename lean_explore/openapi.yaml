@@ -1,0 +1,230 @@
+openapi: 3.0.3
+info:
+  title: LeanExplore API
+  version: v1.0.2
+  description: >-
+    The LeanExplore API provides programmatic access to search and retrieve
+    Lean 4 declarations from indexed projects including Mathlib, PhysLean,
+    FLT, and more.
+
+    Authentication is required via an API key provided as a Bearer token
+    in the Authorization header.
+  contact:
+    name: Justin Asher
+    email: justinchadwickasher@gmail.com
+    url: https://www.leanexplore.com
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+
+tags:
+  - name: Search
+    description: Endpoints for searching Lean declarations.
+  - name: Declarations
+    description: Endpoints for retrieving specific declarations by ID.
+
+servers:
+  - url: https://www.leanexplore.com/api/v2
+    description: Production LeanExplore API Server
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      description: >-
+        API key provided as a Bearer token.
+        Example: `Authorization: Bearer YOUR_API_KEY`
+
+  schemas:
+    SearchResult:
+      type: object
+      description: A Lean declaration returned from search or retrieval.
+      required:
+        - id
+        - name
+        - module
+        - source_text
+        - source_link
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: Unique identifier for the declaration.
+          example: 12345
+        name:
+          type: string
+          description: Fully qualified Lean name.
+          example: "Nat.add_comm"
+        module:
+          type: string
+          description: Module containing the declaration.
+          example: "Mathlib.Data.Nat.Basic"
+        docstring:
+          type: string
+          nullable: true
+          description: Documentation string from source code.
+          example: "Addition of natural numbers is commutative."
+        source_text:
+          type: string
+          description: The Lean source code for this declaration.
+          example: "theorem Nat.add_comm (n m : Nat) : n + m = m + n := by omega"
+        source_link:
+          type: string
+          description: GitHub URL to the declaration source.
+          example: "https://github.com/leanprover-community/mathlib4/blob/master/Mathlib/Data/Nat/Basic.lean#L42"
+        dependencies:
+          type: string
+          nullable: true
+          description: JSON array of declaration names this declaration depends on.
+          example: "[\"Nat.add\", \"Nat.zero\"]"
+        informalization:
+          type: string
+          nullable: true
+          description: Natural language description of the declaration.
+          example: "The sum of two natural numbers is the same regardless of order."
+
+    SearchResponse:
+      type: object
+      description: Response from a search operation.
+      required:
+        - query
+        - results
+        - count
+      properties:
+        query:
+          type: string
+          description: The original search query string.
+          example: "commutative addition"
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/SearchResult'
+          description: List of matching declarations.
+        count:
+          type: integer
+          description: Number of results returned.
+          example: 10
+        processing_time_ms:
+          type: integer
+          nullable: true
+          description: Server-side processing time in milliseconds.
+          example: 45
+
+    ApiError:
+      type: object
+      description: Error response.
+      required:
+        - msg
+      properties:
+        msg:
+          type: string
+          description: Human-readable error message.
+          example: "Invalid or missing API key"
+
+security:
+  - BearerAuth: []
+
+paths:
+  /search:
+    get:
+      summary: Search Declarations
+      description: Search for Lean declarations using natural language or Lean syntax.
+      operationId: searchDeclarations
+      tags:
+        - Search
+      parameters:
+        - name: q
+          in: query
+          required: true
+          description: The search query string.
+          schema:
+            type: string
+          example: "prime number theorem"
+        - name: limit
+          in: query
+          required: false
+          description: Maximum number of results to return (default 20).
+          schema:
+            type: integer
+            default: 20
+          example: 10
+      responses:
+        '200':
+          description: Successful search.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SearchResponse'
+        '400':
+          description: Bad Request - Invalid or missing query.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '401':
+          description: Unauthorized - Invalid or missing API key.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '429':
+          description: Too Many Requests - Rate limit exceeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '500':
+          description: Internal Server Error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+
+  /declarations/{declaration_id}:
+    get:
+      summary: Get Declaration by ID
+      description: Retrieve a specific declaration by its unique ID.
+      operationId: getDeclarationById
+      tags:
+        - Declarations
+      parameters:
+        - name: declaration_id
+          in: path
+          required: true
+          description: The unique declaration ID.
+          schema:
+            type: integer
+            format: int64
+          example: 12345
+      responses:
+        '200':
+          description: Successfully retrieved declaration.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SearchResult'
+        '401':
+          description: Unauthorized - Invalid or missing API key.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '404':
+          description: Not Found - Declaration does not exist.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '429':
+          description: Too Many Requests - Rate limit exceeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '500':
+          description: Internal Server Error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'

@@ -1,0 +1,153 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "lean-explore"
+version = "1.2.1"
+authors = [
+    { name = "Justin Asher", email = "justinchadwickasher@gmail.com" },
+]
+description = "A search engine for Lean 4 declarations."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { file = "LICENSE" }
+keywords = ["lean", "lean4", "search", "formal methods", "theorem prover", "math", "AI"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: Apache Software License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: Scientific/Engineering :: Mathematics",
+    "Topic :: Text Processing :: Indexing",
+]
+
+dependencies = [
+    # Core data and search
+    "sqlalchemy>=2.0",
+    "aiosqlite>=0.19.0",
+    "greenlet>=3.0.0",
+    "numpy>=1.20",
+    "faiss-cpu>=1.7",
+    "filelock>=3.0.0",
+    "nltk>=3.6",
+    "bm25s>=0.2.0",
+
+    # API Client / Shared Data Models
+    "httpx>=0.23.0",
+    "pydantic>=2.0",
+
+    # CLI & Agent Functionality
+    "typer[all]>=0.9.0",
+    "toml>=0.10.0",
+    "openai-agents>=0.0.16",
+
+    # MCP Server Components
+    "mcp>=1.9.0",
+
+    # Utilities
+    "tqdm>=4.60",
+    "rich>=13.0.0",
+    "requests>=2.25.0",
+    "tenacity>=8.0.0",
+    "pooch>=1.8.0",
+]
+
+[project.urls]
+Homepage = "https://www.leanexplore.com/"
+Repository = "https://github.com/justincasher/lean-explore"
+
+[project.scripts]
+lean-explore = "lean_explore.cli.main:app"
+
+[project.optional-dependencies]
+local = [
+    "sentence-transformers>=2.2.0",
+    "torch>=2.0.0",
+]
+
+extract = [
+    "sentence-transformers>=2.2.0",
+    "torch>=2.0.0",
+    "networkx>=3.0",
+]
+
+dev = [
+    "pytest>=7.0",
+    "pytest-cov>=4.0",
+    "pytest-asyncio>=0.21.0",
+    "ruff>=0.1.0",
+    "pre-commit>=3.0.0",
+    "networkx>=3.0",
+    "torch>=2.0.0",
+    "sentence-transformers>=2.2.0",
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
+markers = [
+    "slow: marks tests as slow (deselect with '-m \"not slow\"')",
+    "integration: marks tests as integration tests",
+    "external: marks tests that require external services",
+]
+
+# -- Ruff Configuration --
+
+[tool.ruff]
+# Set the maximum line length.
+line-length = 88
+
+# Set based on requires-python = ">=3.10".
+target-version = "py310"
+
+# Define the patterns for files Ruff should lint.
+include = [
+    "src/**/*.py",
+    "tests/**/*.py",
+    "scripts/**/*.py",
+    "*.py"
+]
+
+# Specify directories and patterns to exclude from linting.
+exclude = [
+    ".venv",
+    ".ruff_cache",
+    "build",
+    "dist",
+    ".env",
+    ".env.example",
+    ".pytest_cache",
+    ".lake_cache",       # For Lean 4 projects
+    "src/*.egg-info",    # Build artifacts
+    "site",              # Documentation sites (e.g., MkDocs)
+    "docs",              # Documentation source files
+    "*.sqlite",
+    "*.db",
+    "*.json",
+]
+
+# --- Linter specific settings ---
+[tool.ruff.lint]
+# E: pycodestyle errors
+# W: pycodestyle warnings
+# F: Pyflakes
+# I: isort
+# UP: pyupgrade
+# D: pydocstyle
+select = ["E", "W", "F", "I", "UP", "D"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["lean_explore"]
+
+[tool.ruff.lint.pydocstyle]
+# Set the docstring convention to Google style.
+convention = "google"
