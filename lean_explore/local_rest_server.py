@@ -36,6 +36,11 @@ async def lifespan(app: FastAPI):
         # use_local_data=False → use CACHE_DIRECTORY (data downloaded via
         # `lean-explore data fetch`)
         engine = SearchEngine(use_local_data=False)
+        logger.info("Warming up LeanExplore search assets...")
+        engine._ensure_bm25_loaded()
+        engine._ensure_faiss_loaded()
+        _ = engine.embedding_client
+        _ = engine.reranker_client
         _service = Service(engine=engine)
         logger.info("Local search engine ready.")
     except FileNotFoundError as exc:
@@ -62,12 +67,18 @@ app = FastAPI(
 async def search_declarations(
     q: str = Query(..., description="Search query string"),
     limit: int = Query(20, ge=1, le=200, description="Maximum results to return"),
+    rerank_top: int = Query(
+        0,
+        ge=0,
+        le=200,
+        description="Number of top candidates to rerank. Use 0 to disable reranking.",
+    ),
 ):
     """Search for Lean declarations using natural language or Lean syntax."""
     if _service is None:
         raise HTTPException(status_code=503, detail="Search service not initialized")
 
-    response = await _service.search(query=q, limit=limit)
+    response = await _service.search(query=q, limit=limit, rerank_top=rerank_top)
     return JSONResponse(content=response.model_dump())
 
 

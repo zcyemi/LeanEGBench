@@ -12,11 +12,19 @@ import urllib.request
 BASE_URL = os.environ.get("LEAN_EXPLORE_BASE_URL", "http://localhost:8580")
 QUERY = "Nat"
 LIMIT = 10
+RERANK_TOP = int(os.environ.get("LEAN_EXPLORE_RERANK_TOP", "0"))
 
 
-def build_url(base_url: str = BASE_URL, query: str = QUERY, limit: int = LIMIT) -> str:
+def build_url(
+    base_url: str = BASE_URL,
+    query: str = QUERY,
+    limit: int = LIMIT,
+    rerank_top: int = RERANK_TOP,
+) -> str:
 	clean_base = base_url.rstrip("/")
-	params = urllib.parse.urlencode({"q": query, "limit": str(limit)})
+	params = urllib.parse.urlencode(
+		{"q": query, "limit": str(limit), "rerank_top": str(rerank_top)}
+	)
 	return f"{clean_base}/search?{params}"
 
 

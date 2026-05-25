@@ -28,6 +28,7 @@ fi
 HOST="${HOST:-127.0.0.1}"
 PORT="${PORT:-8000}"
 LOG_LEVEL="${LOG_LEVEL:-info}"
+REQUESTED_VERSION="${LEAN_EXPLORE_VERSION:-}"
 
 # ── helpers ──────────────────────────────────────────────────────────────────
 
@@ -98,10 +99,20 @@ VERSION_FILE="$HOME/.lean_explore/active_version"
 info "Checking for local data in cache directory: $CACHE_DIR"
 info "Active version file: $VERSION_FILE"
 
+TARGET_VERSION=""
+if [[ -n "$REQUESTED_VERSION" ]]; then
+    TARGET_VERSION="$REQUESTED_VERSION"
+    info "Configured LeanExplore data version: $TARGET_VERSION"
+elif [[ -f "$VERSION_FILE" ]]; then
+    TARGET_VERSION="$(cat "$VERSION_FILE")"
+    info "Using cached active version: $TARGET_VERSION"
+else
+    info "No configured version found; will fetch the latest available version if needed."
+fi
+
 DATA_READY=false
-if [[ -f "$VERSION_FILE" ]]; then
-    ACTIVE_VERSION="$(cat "$VERSION_FILE")"
-    DB_PATH="$CACHE_DIR/$ACTIVE_VERSION/lean_explore.db"
+if [[ -n "$TARGET_VERSION" ]]; then
+    DB_PATH="$CACHE_DIR/$TARGET_VERSION/lean_explore.db"
     info "Checking for local data at $DB_PATH..."
     if [[ -f "$DB_PATH" ]]; then
         DATA_READY=true
@@ -111,10 +122,17 @@ fi
 if [[ "$DATA_READY" == false ]]; then
     info "Local data not found. Running 'lean-explore data fetch'..."
     info "This downloads ~several GB and may take a few minutes..."
-    "$LEAN_EXPLORE_BIN" data fetch
+    FETCH_ARGS=(data fetch)
+    if [[ -n "$TARGET_VERSION" ]]; then
+        FETCH_ARGS+=(--version "$TARGET_VERSION")
+    fi
+    "$LEAN_EXPLORE_BIN" "${FETCH_ARGS[@]}"
     success "Data downloaded."
+    if [[ -f "$VERSION_FILE" ]]; then
+        TARGET_VERSION="$(cat "$VERSION_FILE")"
+    fi
 else
-    success "Local data found at $CACHE_DIR/$ACTIVE_VERSION"
+    success "Local data found at $CACHE_DIR/$TARGET_VERSION"
 fi
 
 # ── 5. Start the REST API server ──────────────────────────────────────────────

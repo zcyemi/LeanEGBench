@@ -12,7 +12,7 @@ This repository can be started as two Docker services:
   - Verify: `POST /verify`
 - `lean_explore`: `http://localhost:8580`
   - Health: `GET /health`
-  - Search: `GET /search?q=Nat&limit=10`
+  - Search: `GET /search?q=Nat&limit=10&rerank_top=0`
   - Declaration: `GET /declarations/{id}`
 
 ## Prerequisites
@@ -65,6 +65,10 @@ The Compose file uses named Docker volumes so expensive initialization is not re
 - `lean_server_lake`: Lean workspace package cache under `lean_server/workspace/.lake`
 - `lean_explore_venv`: Python virtual environment used by `lean_explore`
 - `lean_explore_data`: LeanExplore cache and downloaded search data
+- `lean_explore_hf_cache`: Hugging Face model cache used by local embedding and reranking models
+
+Stopping the stack with `docker compose down` keeps these volumes, so data and model files are not downloaded again on the next `up`.
+Only `docker compose down -v` removes them and forces a fresh download.
 
 To stop the services while keeping cached data:
 
@@ -93,6 +97,24 @@ You can override the default endpoints with environment variables:
 LEAN_EXPLORE_BASE_URL=http://localhost:8580 python verify_check/test_conn.py
 LEAN_VERIFY_URL=http://localhost:8578/verify python verify_check/verify.py
 ```
+
+## Optional LeanExplore parameters
+
+You can provide these variables through your shell environment or a root `.env` file before starting Compose:
+
+```bash
+HF_TOKEN=hf_xxx
+LEAN_EXPLORE_VERSION=20260507_203639
+```
+
+An example file is available at [.env.example](d:/git/BenchEnv/.env.example).
+
+- `HF_TOKEN`: passed into the `lean_explore` container so Hugging Face downloads use authenticated requests and higher rate limits.
+- `LEAN_EXPLORE_VERSION`: selects the exact LeanExplore data version to use. If the requested version is missing from the persisted cache volume, the container runs `lean-explore data fetch --version <value>`.
+
+For local API calls, `GET /search` now accepts `rerank_top`. The default smoke-check path uses `rerank_top=0` so the endpoint responds quickly without cross-encoder reranking. If you want higher-quality reranked results, call `/search` with a positive `rerank_top` value.
+
+The `lean_explore` container now warms the search indices and Hugging Face models during application startup. This makes the first `/search` request much more predictable, but it also means the container can stay in `starting` state for longer on a cold boot.
 
 ## Useful commands
 

@@ -31,18 +31,22 @@ services:
       HOST: 0.0.0.0
       PORT: 8580
       LOG_LEVEL: info
+      HF_HOME: /root/.cache/huggingface
+      HF_TOKEN: "${HF_TOKEN:-}"
+      LEAN_EXPLORE_VERSION: "${LEAN_EXPLORE_VERSION:-}"
       PYTHONUNBUFFERED: "1"
     ports:
       - "8580:8580"
     volumes:
       - lean_explore_venv:/app/.venv
       - lean_explore_data:/root/.lean_explore
+      - lean_explore_hf_cache:/root/.cache/huggingface
     healthcheck:
       test: ["CMD-SHELL", "curl -fsS http://127.0.0.1:8580/health || exit 1"]
       interval: 30s
       timeout: 10s
       retries: 20
-      start_period: 300s
+      start_period: 900s
     restart: unless-stopped
 
 volumes:
@@ -50,3 +54,4 @@ volumes:
   lean_server_lake:
   lean_explore_venv:
   lean_explore_data:
+  lean_explore_hf_cache:
