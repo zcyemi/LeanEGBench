@@ -1,0 +1,1 @@
+.venv/bin/python lean_server.py --workspace './workspace/' --port 8578 -n 4 --host 0.0.0
