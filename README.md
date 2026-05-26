@@ -113,7 +113,12 @@ That means after `docker compose up --build`, you can run `bench-env-code` local
 
 ### Prepare model config
 
-Edit `bench-env-code/env.toml` and set the model entry you want to use:
+Copy `bench-env-code/env.example.toml` to `bench-env-code/env.toml`, then set the model entry you want to use:
+
+```bash
+cd bench-env-code
+cp env.example.toml env.toml
+```
 
 - fill in `api_key`
 - adjust `url` and `model_id` if your provider requires it

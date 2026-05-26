@@ -86,7 +86,7 @@ class AppConfig:
 			)
 
 		if not models:
-			raise ValueError("No models configured in env.toml")
+			raise ValueError("No models configured in env.toml. Copy env.example.toml to env.toml and define at least one model.")
 
 		return cls(config=global_cfg, models=models)
 

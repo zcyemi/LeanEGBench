@@ -13,6 +13,12 @@ if [[ ! -x "$ROOT_DIR/.venv/bin/python" ]]; then
 	uv sync
 fi
 
+if [[ ! -f "$ROOT_DIR/env.toml" ]]; then
+	echo "Missing $ROOT_DIR/env.toml" >&2
+	echo "Copy env.example.toml to env.toml and fill in your model configuration before running." >&2
+	exit 1
+fi
+
 cd "$ROOT_DIR"
 
 exec uv run python -m runner.main \

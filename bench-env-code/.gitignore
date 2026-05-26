@@ -1,5 +1,9 @@
 /__pycache__/
 /logs/
+/.venv/
+/*.egg-info/
+build/
+dist/
 *.cpython-312.pyc
 /.pytest_cache/
 *.pyc

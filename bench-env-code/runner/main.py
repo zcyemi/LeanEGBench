@@ -654,10 +654,13 @@ def main() -> int:
 
 	root = PROJECT_ROOT
 	env_path = root / "env.toml"
+	env_example_path = root / "env.example.toml"
 	template_path = root / "prompts" / "problem_template.txt"
 	system_prompt_path = _system_prompt_path(args.mode)
 	if not env_path.exists():
-		raise FileNotFoundError(f"Missing env file: {env_path}")
+		raise FileNotFoundError(
+			f"Missing env file: {env_path}. Copy {env_example_path.name} to env.toml and fill in your model configuration."
+		)
 	if not template_path.exists():
 		raise FileNotFoundError(f"Missing problem template file: {template_path}")
 	if not system_prompt_path.exists():
