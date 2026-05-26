@@ -21,7 +21,7 @@ Optional environment variables for `lean_explore` can be placed in a root `.env`
 
 ```bash
 HF_TOKEN=hf_xxx
-LEAN_EXPLORE_VERSION=20260507_203639
+LEAN_EXPLORE_VERSION=20260213_050002
 ```
 
 - `HF_TOKEN`: enables authenticated Hugging Face downloads and higher rate limits
