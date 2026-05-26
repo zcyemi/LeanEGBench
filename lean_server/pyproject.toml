@@ -1,11 +1,21 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
 [project]
-name = "leanserver"
+name = "lean-server"
 version = "0.1.0"
-description = "Add your description here"
+description = "Lean verification HTTP server for LeanBenchEnv."
 readme = "README.md"
-requires-python = ">=3.13"
+requires-python = ">=3.12"
 dependencies = [
     "fastapi>=0.136.1",
     "leanclient>=0.9.4",
     "uvicorn>=0.46.0",
 ]
+
+[project.scripts]
+lean-server = "lean_server:main"
+
+[tool.setuptools]
+py-modules = ["lean_server"]

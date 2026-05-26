@@ -4,5 +4,4 @@
 /.pytest_cache/
 *.pyc
 *.DS_Store
-env.toml
 /uv.lock

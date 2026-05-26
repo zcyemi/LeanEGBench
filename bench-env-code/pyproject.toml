@@ -1,9 +1,13 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
 [project]
-name = "benc-env"
+name = "bench-env-code"
 version = "0.1.0"
-description = "Add your description here"
+description = "Benchmark runner for LeanBenchEnv experiments."
 readme = "README.md"
-requires-python = ">=3.13"
+requires-python = ">=3.12"
 dependencies = [
 	"fastapi>=0.115.0",
     "leanclient>=0.9.4",
@@ -11,3 +15,9 @@ dependencies = [
     "openai>=2.32.0",
 	"uvicorn>=0.30.0",
 ]
+
+[project.scripts]
+bench-env-runner = "runner.main:main"
+
+[tool.setuptools]
+packages = ["runner"]

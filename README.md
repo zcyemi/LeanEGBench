@@ -87,15 +87,15 @@ docker compose down -v
 After the services are up, test them from the repository root:
 
 ```bash
-python verify_check/test_conn.py
-python verify_check/verify.py
+curl -fsS "http://localhost:8580/search?q=Nat&limit=10&rerank_top=0" | python -m json.tool
+curl -fsS http://localhost:8578/health | python -m json.tool
 ```
 
 You can override the default endpoints with environment variables:
 
 ```bash
-LEAN_EXPLORE_BASE_URL=http://localhost:8580 python verify_check/test_conn.py
-LEAN_VERIFY_URL=http://localhost:8578/verify python verify_check/verify.py
+curl -fsS "${LEAN_EXPLORE_BASE_URL:-http://localhost:8580}/search?q=Nat&limit=10&rerank_top=0" | python -m json.tool
+curl -fsS "${LEAN_VERIFY_URL:-http://localhost:8578/verify}" -H 'Content-Type: application/json' -d '{"code":"import Mathlib\n#check Nat.succ\n"}' | python -m json.tool
 ```
 
 ## Run `bench-env-code`
@@ -189,7 +189,7 @@ HF_TOKEN=hf_xxx
 LEAN_EXPLORE_VERSION=20260507_203639
 ```
 
-An example file is available at [.env.example](d:/git/BenchEnv/.env.example).
+An example file is available at [.env.example](.env.example).
 
 - `HF_TOKEN`: passed into the `lean_explore` container so Hugging Face downloads use authenticated requests and higher rate limits.
 - `LEAN_EXPLORE_VERSION`: selects the exact LeanExplore data version to use. If the requested version is missing from the persisted cache volume, the container runs `lean-explore data fetch --version <value>`.
