@@ -2,33 +2,75 @@
 
 Benchmark runner for LeanBenchEnv.
 
-## Run locally
+## Artifact Instructions
+
+This directory assumes the local services from the repository root README are already running:
+
+- Lean verification API at `http://localhost:8578/verify`
+- LeanExplore API at `http://localhost:8580`
+
+### 1. Prepare the local runner environment
+
+Install the local Python environment with `uv`:
 
 ```bash
 uv sync
-uv run python -m runner.main --help
 ```
 
-## Configuration
+### 2. Fill in `env.toml`
 
-Copy `env.example.toml` to `env.toml`, then edit `env.toml` with the model endpoint, model id, and API key you want to use.
+Create the runtime config from the checked-in template:
 
 ```bash
 cp env.example.toml env.toml
 ```
 
-Key fields:
+Then edit `env.toml` and set the model entry you plan to use.
 
-- `[[model]].name`: local name used by `./run.sh --model ...`
-- `[[model]].model_id`: provider model id when it differs from `name`
-- `[[model]].url`: provider base URL
-- `[[model]].api_key`: provider API key
-- `lean_explore.url`: keep `http://localhost:8580` when using the local Docker service
+Required fields:
 
-If you only use one provider, leave the other model entries blank or remove them.
+- `[[model]].api_key`
+- `[[model]].url` when your provider endpoint differs from the default
+- `[[model]].model_id` when the provider model id differs from `name`
 
-## Default run
+When using the Dockerized local services, keep:
+
+```toml
+lean_explore.url = "http://localhost:8580"
+```
+
+### 3. Run the benchmark
+
+The standard command is:
 
 ```bash
 ./run.sh
+```
+
+This runs the benchmark with the defaults encoded in `run.sh`:
+
+- dataset: `./dataset/lean-eg-bench.jsonl`
+- model: `deepseek-v4-flash`
+- mode: `tool`
+- pass count: `1`
+- batch size: `1`
+- output database directory: `./output`
+
+Common variants:
+
+```bash
+./run.sh --model gpt-5.4
+./run.sh --mode single
+uv run python -m runner.main --verify --dataset ./dataset/lean-eg-bench.jsonl
+```
+
+### 4. Collect outputs
+
+- result databases are written to `./output`
+- logs are written to `./logs`
+
+To inspect all available CLI options:
+
+```bash
+uv run python -m runner.main --help
 ```
