@@ -10,7 +10,7 @@ from typing import Any, Callable
 from runner.config import ModelConfig
 
 
-VERIFY_URL_DEFAULT = "https://developer.coconut.is:4183/ciset/feishu/devapi2/verify"
+VERIFY_URL_DEFAULT = "http://localhost:8578/verify"
 _CODE_FENCE_RE = re.compile(r"```(?:lean4?|)?\s*(.*?)```", re.IGNORECASE | re.DOTALL)
 _LEAN_TAG_RE = re.compile(r"<lean>\s*(.*?)\s*</lean>", re.IGNORECASE | re.DOTALL)
 

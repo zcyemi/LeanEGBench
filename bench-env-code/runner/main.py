@@ -70,7 +70,7 @@ def _build_parser() -> argparse.ArgumentParser:
 	parser.add_argument("--batch", type=int, default=1, help="Number of tasks to run concurrently")
 	parser.add_argument("--mode", choices=("single", "tool", "agent"), default="single", help="Execution mode")
 	parser.add_argument("--verify", dest="verify_only", action="store_true", help="Only verify each source problem has exactly one sorry and no other errors")
-	parser.add_argument("--verify-url", default="https://developer.coconut.is:4183/ciset/feishu/devapi2/verify", help="External Lean verification endpoint")
+	parser.add_argument("--verify-url", default="http://localhost:8578/verify", help="Lean verification endpoint")
 	parser.add_argument("--db-path", default=str(PROJECT_ROOT / "output"), help="SQLite database path or directory")
 	return parser
 

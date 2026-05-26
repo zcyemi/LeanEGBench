@@ -98,6 +98,88 @@ LEAN_EXPLORE_BASE_URL=http://localhost:8580 python verify_check/test_conn.py
 LEAN_VERIFY_URL=http://localhost:8578/verify python verify_check/verify.py
 ```
 
+## Run `bench-env-code`
+
+`bench-env-code` is the benchmark runner in this repository. It reads tasks from `bench-env-code/dataset/lean-eg-bench.jsonl`, calls a configured model, optionally uses the local `lean_explore` search API in `tool` mode, and sends generated Lean code to the local verification service.
+
+### Default local endpoints
+
+The checked-in `bench-env-code` defaults now match the Docker services started by this repository:
+
+- Lean verify endpoint: `http://localhost:8578/verify`
+- LeanExplore endpoint: `http://localhost:8580`
+
+That means after `docker compose up --build`, you can run `bench-env-code` locally without changing the server URLs.
+
+### Prepare model config
+
+Edit `bench-env-code/env.toml` and set the model entry you want to use:
+
+- fill in `api_key`
+- adjust `url` and `model_id` if your provider requires it
+- keep `lean_explore.url = "http://localhost:8580"` when using the Docker `lean_explore` service
+
+### Install and run
+
+From the repository root:
+
+```bash
+cd bench-env-code
+./run.sh
+```
+
+`run.sh` uses `uv` to create the local environment if needed, then starts the runner with these defaults:
+
+- dataset: `./dataset/lean-eg-bench.jsonl`
+- model: `deepseek-v4-flash`
+- mode: `tool`
+- pass count: `1`
+- batch size: `1`
+- result database directory: `./output`
+
+### Common commands
+
+Run with the default tool workflow:
+
+```bash
+cd bench-env-code
+./run.sh
+```
+
+Run a different model defined in `env.toml`:
+
+```bash
+cd bench-env-code
+./run.sh --model gpt-5.4
+```
+
+Run without LeanExplore tools:
+
+```bash
+cd bench-env-code
+./run.sh --mode single
+```
+
+Only verify the source dataset without calling a model:
+
+```bash
+cd bench-env-code
+uv run python -m runner.main --verify --dataset ./dataset/lean-eg-bench.jsonl
+```
+
+Override the service endpoints if your containers are exposed elsewhere:
+
+```bash
+cd bench-env-code
+./run.sh --verify-url http://localhost:8578/verify
+```
+
+If you also need a different LeanExplore endpoint, update `bench-env-code/env.toml` before running.
+
+### Output files
+
+Runner outputs are written under `bench-env-code/output` and logs are written under `bench-env-code/logs`.
+
 ## Optional LeanExplore parameters
 
 You can provide these variables through your shell environment or a root `.env` file before starting Compose:
