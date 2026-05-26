@@ -1,0 +1,8 @@
+import Mathlib
+open scoped Real EuclideanGeometry Similar Congruent InnerProductSpace Cardinal
+open Affine EuclideanGeometry Module AffineSubspace InnerProductSpace Sphere Real Set Finset
+open Affine.Simplex RealInnerProductSpace AffineEquiv AffineMap Metric
+variable {V Pt : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace Pt]
+variable [NormedAddTorsor V Pt] [Fact (finrank ℝ V = 2)] [Oriented ℝ V (Fin 2)]
+
+{LEAN}

@@ -1,0 +1,13 @@
+[project]
+name = "benc-env"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+	"fastapi>=0.115.0",
+    "leanclient>=0.9.4",
+	"anthropic>=0.50.0",
+    "openai>=2.32.0",
+	"uvicorn>=0.30.0",
+]
