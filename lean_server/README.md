@@ -1,6 +1,6 @@
 # lean_server
 
-Lean verification HTTP server for LeanBenchEnv.
+Lean verification HTTP server for LeanEGBench.
 
 ## Run locally
 

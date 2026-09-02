@@ -1,9 +1,55 @@
-# LeanBenchEnv
+# LeanEGBench
 
-LeanBenchEnv packages the local services needed to run the Lean benchmark environment used by `bench-env-code`:
+LeanEGBench packages the local services needed to run the Lean benchmark environment used by `bench-env-code`:
 
 - `lean_server`: Lean verification service at `http://localhost:8578`
 - `lean_explore`: LeanExplore local search service at `http://localhost:8580`
+
+## Collaborators
+
+- @Scarlett-le
+- @wangying11123
+
+## About LeanEGBench
+
+LeanEGBench is a benchmark for evaluating large language models on Euclidean geometry theorem proving in Lean. Its core dataset contains 130 manually formalized and fully verified problems. Every problem preserves the semantics of its original geometry statement and is expressed directly with native Lean 4 and Mathlib4 concepts, without a separate geometry DSL, custom axioms, or placeholder propositions. Each formalization was independently reviewed, and complete public Lean proofs available before the evaluation period were excluded to reduce proof-level data contamination.
+
+The checked-in runner dataset is [`bench-env-code/dataset/lean-eg-bench.jsonl`](bench-env-code/dataset/lean-eg-bench.jsonl), which contains the 130-problem core evaluation set:
+
+| Subset | Source | Problems |
+| --- | --- | ---: |
+| Basic | Author-selected elementary geometry | 22 |
+| Textbook | *Advanced Euclidean Geometry* | 9 |
+| Textbook | Evan Chen's geometry notes | 20 |
+| Textbook | *Geometry Revisited* | 15 |
+| Competition | IMO | 22 |
+| Competition | National and regional competitions | 42 |
+| **Total** |  | **130** |
+
+The problems cover goals such as metric and angle equalities, collinearity, concurrence, perpendicularity, parallelism, concyclicity, similarity, and tangency, across topics including triangles, circles, incenters, circumcenters, orthocenters, projections, and angle bisectors.
+
+### Evaluation
+
+The paper evaluates `gpt-5.4-mini`, `deepseek-v4-flash`, `gemini-3.0-flash`, `o4-mini`, and `gpt-oss-120b` using Lean 4.29.0, Mathlib4 commit `8a178386ffc0f5fef0b77738bb5449d50efeea95`, and LeanExplore data version `20260213_050002`. Each model receives four independent attempts per problem with a 32,768-token output budget under two conditions:
+
+- **Single:** closed-book, single-shot proof generation with no theorem search or verifier feedback.
+- **Tool:** single-shot proof generation with up to 25 LeanExplore theorem queries, but still without an iterative verifier-repair loop.
+
+A proof counts as successful only when it preserves the theorem statement exactly, introduces no `sorry`, `admit`, new axioms, or bypass declarations, closes every goal, and compiles in the fixed environment. The evaluation reports task-level pass@1, pass@2, pass@4, valid submissions, failure stages, and Lean error categories.
+
+### Results
+
+All five models score **0/130 on Single pass@4**, showing a strong floor effect without theorem retrieval. Tool access separates the models, but absolute completion remains low:
+
+| Model | Tool pass@1 | Tool pass@2 | Tool pass@4 | Elementary solved at pass@4 | Competition / IMO solved |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| `gpt-5.4-mini` | 6/130 | 7/130 | **7/130** | 5/22 | 0/64 |
+| `deepseek-v4-flash` | 2/130 | 3/130 | 6/130 | 4/22 | 0/64 |
+| `gemini-3.0-flash` | 1/130 | 3/130 | 5/130 | 2/22 | 0/64 |
+| `o4-mini` | 0/130 | 0/130 | 1/130 | 1/22 | 0/64 |
+| `gpt-oss-120b` | 0/130 | 0/130 | 1/130 | 0/22 | 0/64 |
+
+Successful proofs are concentrated in the elementary subset; none of the 64 competition and IMO problems is solved. Tool use improves the number of submissions that reach Lean verification for some models, but does not help uniformly. The remaining failures expose different bottlenecks in theorem retrieval, type and instance construction, proof planning, syntax, and closing incomplete proofs.
 
 ## Artifact Instructions
 

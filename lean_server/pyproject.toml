@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "lean-server"
 version = "0.1.0"
-description = "Lean verification HTTP server for LeanBenchEnv."
+description = "Lean verification HTTP server for LeanEGBench."
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [

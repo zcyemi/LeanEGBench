@@ -1,6 +1,6 @@
 # bench-env-code
 
-Benchmark runner for LeanBenchEnv.
+Benchmark runner for LeanEGBench.
 
 ## Artifact Instructions
 

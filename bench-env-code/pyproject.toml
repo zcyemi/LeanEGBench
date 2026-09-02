@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "bench-env-code"
 version = "0.1.0"
-description = "Benchmark runner for LeanBenchEnv experiments."
+description = "Benchmark runner for LeanEGBench experiments."
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
